@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}My History{% endblock %}
+{% block content %}
+<div class="card">
+    <h2>&#128203; My Prediction History</h2>
+    <p class="subtitle">Your 50 most recent predictions.</p>
+
+    {% if predictions %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Prediction</th>
+                <th>Date &amp; Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in predictions %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ p['title'][:80] }}{% if p['title']|length > 80 %}...{% endif %}</td>
+                <td>
+                    {% set lbl = p['prediction'] %}
+                    <span class="badge
+                        {% if lbl == 'Viral' %}badge-viral
+                        {% elif lbl == 'Flop' %}badge-flop
+                        {% else %}badge-average{% endif %}">
+                        {% if lbl == 'Viral' %}&#128640;
+                        {% elif lbl == 'Flop' %}&#128197;
+                        {% else %}&#128202;{% endif %}
+                        {{ lbl }}
+                    </span>
+                </td>
+                <td class="small">{{ p['created_at'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="small mt-4">
+        No predictions yet.
+        <a href="{{ url_for('predict') }}">Make your first prediction</a>
+    </p>
+    {% endif %}
+</div>
+{% endblock %}

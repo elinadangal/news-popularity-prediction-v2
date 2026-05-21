@@ -1,0 +1,318 @@
+/* ── Reset ────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Body ─────────────────────────────────────────────────────── */
+body {
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    background: #eef2f7;
+    color: #2d3748;
+    min-height: 100vh;
+}
+
+/* ── Navbar ───────────────────────────────────────────────────── */
+nav {
+    background: linear-gradient(135deg, #1a237e, #283593);
+    padding: 0 32px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+nav .brand {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+nav .nav-links a {
+    color: #c5cae9;
+    text-decoration: none;
+    margin-left: 22px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+nav .nav-links a:hover {
+    color: #ffffff;
+}
+
+/* ── Page container ───────────────────────────────────────────── */
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* ── Card ─────────────────────────────────────────────────────── */
+.card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 36px 40px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+}
+
+.card h2 {
+    color: #1a237e;
+    font-size: 1.45rem;
+    margin-bottom: 6px;
+}
+
+.subtitle {
+    color: #718096;
+    font-size: 0.93rem;
+    margin-bottom: 28px;
+}
+
+/* ── Form elements ────────────────────────────────────────────── */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #4a5568;
+}
+
+input[type=text],
+input[type=email],
+input[type=password],
+input[type=number],
+textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #cbd5e0;
+    border-radius: 7px;
+    font-size: 0.97rem;
+    background: #f7fafc;
+    color: #2d3748;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: #3949ab;
+    box-shadow: 0 0 0 3px rgba(57, 73, 171, 0.12);
+    background: #ffffff;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────── */
+.btn {
+    display: inline-block;
+    background: #1a237e;
+    color: #ffffff;
+    border: none;
+    padding: 11px 30px;
+    border-radius: 7px;
+    font-size: 0.97rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background: #283593;
+}
+
+.btn-danger {
+    background: #c53030;
+}
+
+.btn-danger:hover {
+    background: #9b2c2c;
+}
+
+.btn-sm {
+    padding: 6px 16px;
+    font-size: 0.85rem;
+}
+
+/* ── Alerts ───────────────────────────────────────────────────── */
+.alert {
+    padding: 12px 16px;
+    border-radius: 7px;
+    margin-bottom: 20px;
+    font-size: 0.93rem;
+}
+
+.alert-error {
+    background: #fff5f5;
+    color: #c53030;
+    border: 1px solid #fc8181;
+}
+
+.alert-success {
+    background: #f0fff4;
+    color: #276749;
+    border: 1px solid #68d391;
+}
+
+/* ── Tables ───────────────────────────────────────────────────── */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+}
+
+th, td {
+    padding: 11px 14px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 0.92rem;
+}
+
+th {
+    background: #ebf0fc;
+    color: #1a237e;
+    font-weight: 700;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover td {
+    background: #f7fafc;
+}
+
+/* ── Prediction badges ────────────────────────────────────────── */
+.badge {
+    display: inline-block;
+    padding: 3px 11px;
+    border-radius: 99px;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.badge-viral {
+    background: #c6f6d5;
+    color: #22543d;
+}
+
+.badge-average {
+    background: #bee3f8;
+    color: #1a365d;
+}
+
+.badge-flop {
+    background: #fed7d7;
+    color: #742a2a;
+}
+
+/* ── Prediction result box ────────────────────────────────────── */
+.result-box {
+    margin-bottom: 28px;
+    padding: 24px 32px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.result-viral {
+    background: #f0fff4;
+    color: #22543d;
+    border: 2px solid #68d391;
+}
+
+.result-average {
+    background: #ebf8ff;
+    color: #1a365d;
+    border: 2px solid #63b3ed;
+}
+
+.result-flop {
+    background: #fff5f5;
+    color: #742a2a;
+    border: 2px solid #fc8181;
+}
+
+.result-box p {
+    font-size: 0.9rem;
+    font-weight: 400;
+    margin-top: 6px;
+    opacity: 0.8;
+}
+
+/* ── Three-column grid (metadata fields) ─────────────────────── */
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+/* ── Stats cards (admin dashboard) ───────────────────────────── */
+.stats-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    border-radius: 10px;
+    padding: 18px 28px;
+    min-width: 160px;
+}
+
+.stat-card-blue {
+    background: #ebf0fc;
+}
+
+.stat-card-green {
+    background: #f0fff4;
+}
+
+.stat-number-blue {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a237e;
+}
+
+.stat-number-green {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #22543d;
+}
+
+/* ── Section headings ─────────────────────────────────────────── */
+.section-title {
+    color: #1a237e;
+    margin-bottom: 10px;
+}
+
+/* ── Utility classes ──────────────────────────────────────────── */
+.text-center { text-align: center; }
+.mt-4        { margin-top: 16px; }
+.mb-4        { margin-bottom: 16px; }
+.small       { font-size: 0.88rem; color: #718096; }
+.link-row    { margin-top: 18px; font-size: 0.9rem; }
+
+.link-row a {
+    color: #3949ab;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.link-row a:hover {
+    text-decoration: underline;
+}
+
+.meta-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #4a5568;
+    margin-bottom: 12px;
+}
