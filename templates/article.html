@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ article['title'] }}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:760px; margin:0 auto;">
+    <a href="{{ url_for('portal') }}" class="link-row" style="display:inline-block; margin-bottom:20px;">
+        Back to News Portal
+    </a>
+
+    <div class="badge
+        {% if article['prediction'] == 'Viral' %}badge-viral
+        {% elif article['prediction'] == 'Flop' %}badge-flop
+        {% else %}badge-average{% endif %}"
+        style="margin-bottom:16px;">
+        {{ article['prediction'] }}
+    </div>
+
+    <h2 style="font-size:1.7rem; line-height:1.3; margin-bottom:14px;">
+        {{ article['title'] }}
+    </h2>
+
+    <div class="small" style="margin-bottom:24px; display:flex; gap:18px;">
+        <span>By <strong>{{ article['username'] }}</strong></span>
+        <span>{{ article['created_at'] }}</span>
+    </div>
+
+    <div style="font-size:1rem; line-height:1.8; color:#2d3748; white-space:pre-wrap;">
+        {{ article['content'] }}
+    </div>
+
+    <div style="margin-top:32px; padding-top:20px; border-top:1px solid #e2e8f0;" class="small">
+        <strong>Article Metadata</strong><br>
+        Hyperlinks: {{ article['num_hrefs'] }} &nbsp;|&nbsp;
+        Images: {{ article['num_imgs'] }} &nbsp;|&nbsp;
+        Videos: {{ article['num_videos'] }}
+    </div>
+</div>
+{% endblock %}

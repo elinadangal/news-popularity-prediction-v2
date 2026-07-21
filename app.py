@@ -1,17 +1,7 @@
 """
 app.py
 Flask web application for the News Popularity Prediction System.
-
-Only Flask is an external package.
-All ML, preprocessing, and database code is implemented from scratch.
-
-Run:
-    python app.py
-Open: http://127.0.0.1:5000
-
-Default admin login:
-    Username: admin
-    Password: admin123
+Features are extracted automatically from the article text the user submits.
 """
 
 import os
@@ -56,8 +46,7 @@ def init_db():
             id       INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT    NOT NULL UNIQUE,
             email    TEXT    NOT NULL UNIQUE,
-            password TEXT    NOT NULL,
-            role     TEXT    NOT NULL DEFAULT 'user'
+            password TEXT    NOT NULL
         )
     """)
 
@@ -65,6 +54,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS predictions (
             id         INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id    INTEGER NOT NULL,
+            username   TEXT    NOT NULL,
             title      TEXT    NOT NULL,
             content    TEXT    NOT NULL,
             num_hrefs  INTEGER NOT NULL DEFAULT 0,
@@ -76,21 +66,11 @@ def init_db():
         )
     """)
 
-    cur.execute("SELECT id FROM users WHERE username='admin'")
-    if cur.fetchone() is None:
-        cur.execute(
-            "INSERT INTO users (username, email, password, role) VALUES (?,?,?,?)",
-            ("admin", "admin@newspred.com", hash_password("admin123"), "admin")
-        )
     conn.commit()
     conn.close()
 
 
 def hash_password(password):
-    """
-    Simple deterministic hash - no external library.
-    For academic purposes only; use bcrypt in production.
-    """
     salted = password + "tribhuvan_np_salt_9274"
     total  = 5381
     for ch in salted:
@@ -98,21 +78,29 @@ def hash_password(password):
     return str(total)
 
 
-# ── Route helpers ─────────────────────────────────────────────────────────────
-
 def logged_in():
     return "user_id" in session
-
-
-def is_admin():
-    return session.get("role") == "admin"
 
 
 # ── Routes ────────────────────────────────────────────────────────────────────
 
 @app.route("/")
-def index():
-    return redirect(url_for("predict") if logged_in() else url_for("login"))
+def portal():
+    conn = get_db()
+    viral = conn.execute(
+        "SELECT id, username, title, content, created_at FROM predictions "
+        "WHERE prediction='Viral' ORDER BY id DESC"
+    ).fetchall()
+    average = conn.execute(
+        "SELECT id, username, title, content, created_at FROM predictions "
+        "WHERE prediction='Average' ORDER BY id DESC"
+    ).fetchall()
+    flop = conn.execute(
+        "SELECT id, username, title, content, created_at FROM predictions "
+        "WHERE prediction='Flop' ORDER BY id DESC"
+    ).fetchall()
+    conn.close()
+    return render_template("portal.html", viral=viral, average=average, flop=flop)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -130,8 +118,6 @@ def register():
             error = "Password must be at least 6 characters."
         else:
             conn = get_db()
-            conn.execute("SELECT id FROM users WHERE username=? OR email=?",
-                         (username, email))
             if conn.execute("SELECT id FROM users WHERE username=? OR email=?",
                             (username, email)).fetchone():
                 error = "Username or email already registered."
@@ -165,7 +151,6 @@ def login():
         if user:
             session["user_id"]  = user["id"]
             session["username"] = user["username"]
-            session["role"]     = user["role"]
             return redirect(url_for("predict"))
         else:
             error = "Incorrect username or password."
@@ -175,14 +160,16 @@ def login():
 @app.route("/logout")
 def logout():
     session.clear()
-    return redirect(url_for("login"))
+    return redirect(url_for("portal"))
 
 
 @app.route("/predict", methods=["GET", "POST"])
 def predict():
     if not logged_in():
         return redirect(url_for("login"))
+
     result, error = None, None
+
     if request.method == "POST":
         title      = request.form.get("title",      "").strip()
         content    = request.form.get("content",    "").strip()
@@ -195,16 +182,20 @@ def predict():
         elif _model is None:
             error = "Model not loaded. Run train.py first."
         else:
-            x_raw  = extract_text_features(title, content, num_hrefs, num_imgs, num_videos)
+            # Extract features from text automatically
+            x_raw  = extract_text_features(
+                title, content, num_hrefs, num_imgs, num_videos
+            )
             x_norm = normalize_single(x_raw, _feature_stats)
             result = _model.predict_one(x_norm)
 
             conn = get_db()
             conn.execute(
                 "INSERT INTO predictions "
-                "(user_id, title, content, num_hrefs, num_imgs, num_videos, prediction, created_at) "
-                "VALUES (?,?,?,?,?,?,?,?)",
-                (session["user_id"], title, content,
+                "(user_id, username, title, content, "
+                " num_hrefs, num_imgs, num_videos, prediction, created_at) "
+                "VALUES (?,?,?,?,?,?,?,?,?)",
+                (session["user_id"], session["username"], title, content,
                  num_hrefs, num_imgs, num_videos, result,
                  datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             )
@@ -212,6 +203,19 @@ def predict():
             conn.close()
 
     return render_template("predict.html", result=result, error=error)
+
+
+@app.route("/article/<int:article_id>")
+def view_article(article_id):
+    conn = get_db()
+    article = conn.execute(
+        "SELECT * FROM predictions WHERE id=?", (article_id,)
+    ).fetchone()
+    conn.close()
+    if article is None:
+        flash("Article not found.", "error")
+        return redirect(url_for("portal"))
+    return render_template("article.html", article=article)
 
 
 @app.route("/history")
@@ -226,34 +230,6 @@ def history():
     ).fetchall()
     conn.close()
     return render_template("history.html", predictions=rows)
-
-
-@app.route("/admin")
-def admin_dashboard():
-    if not is_admin():
-        return redirect(url_for("predict"))
-    conn       = get_db()
-    users      = conn.execute("SELECT id, username, email, role FROM users ORDER BY id").fetchall()
-    total_pred = conn.execute("SELECT COUNT(*) FROM predictions").fetchone()[0]
-    recent     = conn.execute(
-        "SELECT u.username, p.title, p.prediction, p.created_at "
-        "FROM predictions p JOIN users u ON p.user_id=u.id "
-        "ORDER BY p.id DESC LIMIT 10"
-    ).fetchall()
-    conn.close()
-    return render_template("admin.html", users=users, total_pred=total_pred, recent=recent)
-
-
-@app.route("/admin/delete_user/<int:user_id>", methods=["POST"])
-def delete_user(user_id):
-    if not is_admin():
-        return redirect(url_for("predict"))
-    conn = get_db()
-    conn.execute("DELETE FROM users WHERE id=? AND role!='admin'", (user_id,))
-    conn.commit()
-    conn.close()
-    flash("User deleted.", "success")
-    return redirect(url_for("admin_dashboard"))
 
 
 if __name__ == "__main__":

@@ -8,19 +8,20 @@
 </head>
 <body>
 
-{% if session.get('user_id') %}
 <nav>
-    <span class="brand">&#128240; News Popularity Predictor</span>
+    <span class="brand">News Popularity Predictor</span>
     <div class="nav-links">
+        <a href="{{ url_for('portal') }}">News Portal</a>
+        {% if session.get('user_id') %}
         <a href="{{ url_for('predict') }}">Predict</a>
         <a href="{{ url_for('history') }}">My History</a>
-        {% if session.get('role') == 'admin' %}
-        <a href="{{ url_for('admin_dashboard') }}">Admin</a>
-        {% endif %}
         <a href="{{ url_for('logout') }}">Logout ({{ session.get('username') }})</a>
+        {% else %}
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
+        {% endif %}
     </div>
 </nav>
-{% endif %}
 
 <div class="container">
     {% with messages = get_flashed_messages(with_categories=true) %}

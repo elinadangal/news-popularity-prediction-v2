@@ -2,9 +2,10 @@
 {% block title %}Predict{% endblock %}
 {% block content %}
 <div class="card">
-    <h2>&#128302; Predict News Popularity</h2>
+    <h2>Predict News Popularity</h2>
     <p class="subtitle">Enter your article details. The Random Forest model will classify it as
         <strong>Viral</strong>, <strong>Average</strong>, or <strong>Flop</strong>.
+        The result will appear on the <a href="{{ url_for('portal') }}">News Portal</a>.
     </p>
 
     {% if error %}
@@ -13,15 +14,17 @@
 
     {% if result %}
     <div class="result-box {% if result == 'Viral' %}result-viral{% elif result == 'Flop' %}result-flop{% else %}result-average{% endif %}">
-        {% if result == 'Viral' %}&#128640; Viral
-        {% elif result == 'Flop' %}&#128197; Flop
-        {% else %}&#128202; Average
-        {% endif %}
+        {{ result }}
         <p>
-            {% if result == 'Viral' %}This article is predicted to get a HIGH number of shares!
+            {% if result == 'Viral' %}This article is predicted to get a HIGH number of shares.
             {% elif result == 'Flop' %}This article is predicted to receive a LOW number of shares.
-            {% else %}This article is predicted to get an AVERAGE number of shares.
-            {% endif %}
+            {% else %}This article is predicted to get an AVERAGE number of shares.{% endif %}
+        </p>
+        <p style="margin-top:10px; font-size:0.85rem;">
+            <a href="{{ url_for('portal') }}"
+               style="color:inherit; text-decoration:underline; opacity:0.8;">
+                View on News Portal
+            </a>
         </p>
     </div>
     {% endif %}
@@ -56,7 +59,7 @@
             </div>
         </div>
 
-        <button type="submit" class="btn">&#9889; Predict Popularity</button>
+        <button type="submit" class="btn">Predict Popularity</button>
     </form>
 </div>
 {% endblock %}

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Popularity Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="portal-nav">
+    <span class="brand">News Popularity Portal</span>
+    <div class="nav-right">
+        {% if session.get('user_id') %}
+            <span style="color:#c5cae9; font-size:0.9rem;">
+                Welcome, <strong style="color:#ffffff;">{{ session.get('username') }}</strong>
+            </span>
+            <a href="{{ url_for('predict') }}" class="btn-login">Predict</a>
+            <a href="{{ url_for('history') }}" style="color:#c5cae9;">My History</a>
+            <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="btn-login">Login</a>
+            <a href="{{ url_for('register') }}" class="btn-logout">Register</a>
+        {% endif %}
+    </div>
+</nav>
+
+<!-- Hero -->
+<div class="portal-hero">
+    <h1>News Popularity Portal</h1>
+    <p>Discover how news articles are predicted to perform across the web</p>
+    <div class="hero-stats">
+        <div class="hero-stat viral-stat">
+            <div class="number">{{ viral|length }}</div>
+            <div class="label">Viral Articles</div>
+        </div>
+        <div class="hero-stat average-stat">
+            <div class="number">{{ average|length }}</div>
+            <div class="label">Average Articles</div>
+        </div>
+        <div class="hero-stat flop-stat">
+            <div class="number">{{ flop|length }}</div>
+            <div class="label">Flop Articles</div>
+        </div>
+    </div>
+</div>
+
+<!-- Portal Body -->
+<div class="portal-body">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, msg in messages %}
+        <div class="alert alert-{{ category }}" style="margin-bottom:20px;">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <!-- VIRAL SECTION -->
+    <div class="portal-section">
+        <div class="section-header viral-header">
+            <h2>Viral Articles</h2>
+            <span class="section-count viral-count">{{ viral|length }} articles</span>
+        </div>
+        {% if viral %}
+        <div class="news-grid">
+            {% for p in viral %}
+            <a href="{{ url_for('view_article', article_id=p['id']) }}" class="news-card viral-card">
+                <div class="card-title">{{ p['title'] }}</div>
+                <div class="card-excerpt">
+                    {{ p['content'][:120] }}{% if p['content']|length > 120 %}...{% endif %}
+                </div>
+                <div class="card-footer">
+                    <span class="card-user">{{ p['username'] }}</span>
+                    <span>{{ p['created_at'] }}</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            No viral articles predicted yet.
+            {% if session.get('user_id') %}
+            <br><a href="{{ url_for('predict') }}" style="color:#3949ab;">Predict one now</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- AVERAGE SECTION -->
+    <div class="portal-section">
+        <div class="section-header average-header">
+            <h2>Average Articles</h2>
+            <span class="section-count average-count">{{ average|length }} articles</span>
+        </div>
+        {% if average %}
+        <div class="news-grid">
+            {% for p in average %}
+            <a href="{{ url_for('view_article', article_id=p['id']) }}" class="news-card average-card">
+                <div class="card-title">{{ p['title'] }}</div>
+                <div class="card-excerpt">
+                    {{ p['content'][:120] }}{% if p['content']|length > 120 %}...{% endif %}
+                </div>
+                <div class="card-footer">
+                    <span class="card-user">{{ p['username'] }}</span>
+                    <span>{{ p['created_at'] }}</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            No average articles predicted yet.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- FLOP SECTION -->
+    <div class="portal-section">
+        <div class="section-header flop-header">
+            <h2>Flop Articles</h2>
+            <span class="section-count flop-count">{{ flop|length }} articles</span>
+        </div>
+        {% if flop %}
+        <div class="news-grid">
+            {% for p in flop %}
+            <a href="{{ url_for('view_article', article_id=p['id']) }}" class="news-card flop-card">
+                <div class="card-title">{{ p['title'] }}</div>
+                <div class="card-excerpt">
+                    {{ p['content'][:120] }}{% if p['content']|length > 120 %}...{% endif %}
+                </div>
+                <div class="card-footer">
+                    <span class="card-user">{{ p['username'] }}</span>
+                    <span>{{ p['created_at'] }}</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            No flop articles predicted yet.
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+</body>
+</html>
