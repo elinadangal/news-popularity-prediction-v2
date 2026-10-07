@@ -29,9 +29,9 @@ DATASET_PATH = "OnlineNewsPopularity.csv"
 MODEL_PATH   = "model.pkl"
 
 # Balanced thresholds so Flop class has enough samples
-VIRAL_THRESHOLD = 1400   # shares >= 1400       -> Viral
-FLOP_THRESHOLD  = 700    # shares <= 700        -> Flop
-                          # 700 < shares < 1400 -> Average
+VIRAL_THRESHOLD = 1600  # shares >= 1600       -> Viral
+FLOP_THRESHOLD  = 800    # shares <= 800        -> Flop
+                          # 800 < shares < 1600 -> Average
 
 # Faster hyperparameters
 N_TREES      = 20        # reduced from 50
@@ -69,7 +69,7 @@ def balanced_sample(X, y, per_class, seed=42):
 def main():
     start = time.time()
     print("=" * 57)
-    print("  News Popularity Prediction  -  Fast Training Mode")
+    print("  News Popularity Prediction   ")
     print("=" * 57)
 
     # 1. Load dataset
@@ -119,7 +119,6 @@ def main():
 
     # 6. Train Random Forest
     print(f"\n[6/6] Training Random Forest ({N_TREES} trees, max_depth={MAX_DEPTH}) ...")
-    print(f"      This should take 2 to 5 minutes ...")
     rf = RandomForest(
         n_trees      = N_TREES,
         max_depth    = MAX_DEPTH,
@@ -139,8 +138,6 @@ def main():
     # 8. Save model
     save_model(rf, feature_stats, MODEL_PATH)
     print(f"\nTotal time: {time.time() - start:.1f}s")
-    print("Run 'python app.py' to start the web application.\n")
-
 
 if __name__ == "__main__":
     main()

@@ -8,9 +8,9 @@ Features extracted (in order):
     1. n_tokens_title           - word count of title
     2. n_tokens_content         - word count of content
     3. average_token_length     - average characters per word in content
-    4. num_hrefs                - user supplied via form
-    5. num_imgs                 - user supplied via form
-    6. num_videos               - user supplied via form
+    4. num_hrefs                - user supplied via form (default: 3)
+    5. num_imgs                 - user supplied via form (default: 2)
+    6. num_videos               - user supplied via form (default: 0)
     7. global_subjectivity      - proportion of subjective/opinion words
     8. global_sentiment_polarity - (positive - negative) / total words
 ────────────────────────────────────────────────────────────────────────────────
@@ -174,7 +174,7 @@ def _average_word_length(text):
 
 
 def extract_text_features(title, content,
-                           num_hrefs=0, num_imgs=0, num_videos=0):
+                           num_hrefs=3, num_imgs=2, num_videos=0):
     """
     Extract the 8 numerical features used by the trained model.
 
@@ -182,9 +182,9 @@ def extract_text_features(title, content,
     ----------
     title      : str  - article headline
     content    : str  - article body text
-    num_hrefs  : int  - number of hyperlinks (from form)
-    num_imgs   : int  - number of images (from form)
-    num_videos : int  - number of videos (from form)
+    num_hrefs  : int  - number of hyperlinks (default: 3)
+    num_imgs   : int  - number of images (default: 2)
+    num_videos : int  - number of videos (default: 0)
 
     Returns
     -------
@@ -213,13 +213,11 @@ def extract_text_features(title, content,
     subj_count = sum(1 for t in tokens if t in _SUBJECTIVE_WORDS)
 
     # Subjectivity: proportion of opinion/sentiment words
-    # Scale to match UCI range (roughly 0.0 to 1.0, avg ~0.45)
+    # Direct proportion - NO scaling multiplier (fixes the "only Viral" bug)
     raw_subjectivity = (pos_count + neg_count + subj_count) / total
-    # UCI subjectivity averages around 0.45; scale accordingly
-    global_subjectivity = min(raw_subjectivity * 2.5, 1.0)
+    global_subjectivity = min(raw_subjectivity, 1.0)
 
     # Sentiment polarity: (positive - negative) ratio
-    # Scale to match UCI range (roughly -0.39 to 0.73, avg ~0.10)
     if (pos_count + neg_count) > 0:
         global_sentiment_polarity = (pos_count - neg_count) / (pos_count + neg_count)
     else:

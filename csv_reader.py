@@ -2,16 +2,12 @@
 csv_reader.py
 Reads the UCI Online News Popularity CSV file without any external libraries.
 
-IMPORTANT - UCI dataset quirk:
-  Every column name has a LEADING SPACE e.g. " n_tokens_title"
-  url and timedelta are non-predictive; they are skipped automatically.
-  The dataset has 39,644 rows x 61 columns and NO missing values.
 """
 
-import csv  # Python built-in only
+import csv  
 
 
-# ── The 8 selected feature columns (with leading space exactly as in CSV) ─────
+#  The 8 selected feature columns  
 SELECTED_FEATURE_COLS = [
     " n_tokens_title",
     " n_tokens_content",
@@ -35,7 +31,7 @@ FEATURE_DISPLAY_NAMES = [
     "global_sentiment_polarity",
 ]
 
-LABEL_COL = " shares"   # target column (with leading space)
+LABEL_COL = " shares"   # target column 
 
 
 def load_dataset(filepath):
@@ -43,7 +39,6 @@ def load_dataset(filepath):
     Load OnlineNewsPopularity.csv.
 
     Returns
-    -------
     headers : list[str]  - raw column names exactly as in the CSV
     rows    : list[list] - every data row as a list of strings
     """
@@ -53,7 +48,7 @@ def load_dataset(filepath):
         reader = csv.reader(f)
         for i, row in enumerate(reader):
             if i == 0:
-                headers = row          # keep original names (leading spaces intact)
+                headers = row          # keep original names 
             else:
                 rows.append(row)
     print(f"[CSV] Loaded {len(rows):,} rows, {len(headers)} columns.")

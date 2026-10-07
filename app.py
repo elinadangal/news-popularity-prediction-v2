@@ -14,14 +14,14 @@ from model_io          import load_model
 from text_preprocessor import extract_text_features
 from data_utils        import normalize_single
 
-# ── App setup ─────────────────────────────────────────────────────────────────
+# App setup 
 app = Flask(__name__)
 app.secret_key = "np_secret_2024_tribhuvan"
 
 MODEL_PATH = "model.pkl"
 DB_PATH    = "news_popularity.db"
 
-# ── Load model once at startup ────────────────────────────────────────────────
+# Load model once at startup 
 _model, _feature_stats = None, None
 if os.path.exists(MODEL_PATH):
     _model, _feature_stats = load_model(MODEL_PATH)
@@ -29,7 +29,7 @@ else:
     print(f"[WARNING] '{MODEL_PATH}' not found. Run train.py first.")
 
 
-# ── Database ──────────────────────────────────────────────────────────────────
+# Database 
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
@@ -82,7 +82,7 @@ def logged_in():
     return "user_id" in session
 
 
-# ── Routes ────────────────────────────────────────────────────────────────────
+#  Routes 
 
 @app.route("/")
 def portal():
@@ -173,8 +173,9 @@ def predict():
     if request.method == "POST":
         title      = request.form.get("title",      "").strip()
         content    = request.form.get("content",    "").strip()
-        num_hrefs  = int(request.form.get("num_hrefs",  "0") or 0)
-        num_imgs   = int(request.form.get("num_imgs",   "0") or 0)
+        # FIXED: Better defaults that match typical UCI dataset values
+        num_hrefs  = int(request.form.get("num_hrefs",  "3") or 3)
+        num_imgs   = int(request.form.get("num_imgs",   "2") or 2)
         num_videos = int(request.form.get("num_videos", "0") or 0)
 
         if not title or not content:
